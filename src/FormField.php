@@ -522,8 +522,47 @@ class FormField
         $script .= '});';
 
         // Clipboard paste handler
+        $script .= 'let lastDropzoneInteraction = null;';
+        $script .= 'let dropzoneInteractionTimeout = null;';
+        
+        // Track interactions with the dropzone
+        $script .= 'dropzone.addEventListener("click", function() {';
+        $script .= 'lastDropzoneInteraction = Date.now();';
+        $script .= 'clearTimeout(dropzoneInteractionTimeout);';
+        $script .= 'dropzoneInteractionTimeout = setTimeout(() => { lastDropzoneInteraction = null; }, 10000);';
+        $script .= '});';
+        
+        $script .= 'dropzone.addEventListener("focus", function() {';
+        $script .= 'lastDropzoneInteraction = Date.now();';
+        $script .= 'clearTimeout(dropzoneInteractionTimeout);';
+        $script .= 'dropzoneInteractionTimeout = setTimeout(() => { lastDropzoneInteraction = null; }, 10000);';
+        $script .= '}, true);';
+        
         $script .= 'document.addEventListener("paste", function(e) {';
-        $script .= 'if (document.activeElement.closest("#'.$dropzoneId.'") || dropzone.contains(document.activeElement)) {';
+        $script .= 'let shouldHandle = false;';
+        
+        // Check if activeElement is inside dropzone
+        $script .= 'if (document.activeElement && (dropzone.contains(document.activeElement) || document.activeElement.closest("#'.$dropzoneId.'"))) {';
+        $script .= 'shouldHandle = true;';
+        $script .= '}';
+        
+        // Check if dropzone was recently interacted with
+        $script .= 'if (!shouldHandle && lastDropzoneInteraction && (Date.now() - lastDropzoneInteraction < 5000)) {';
+        $script .= 'shouldHandle = true;';
+        $script .= '}';
+        
+        // Check if dropzone is visible and cursor is over it
+        $script .= 'if (!shouldHandle) {';
+        $script .= 'const rect = dropzone.getBoundingClientRect();';
+        $script .= 'const centerX = rect.left + rect.width / 2;';
+        $script .= 'const centerY = rect.top + rect.height / 2;';
+        $script .= 'const elementAtCenter = document.elementFromPoint(centerX, centerY);';
+        $script .= 'if (elementAtCenter && (dropzone.contains(elementAtCenter) || elementAtCenter === dropzone)) {';
+        $script .= 'shouldHandle = true;';
+        $script .= '}';
+        $script .= '}';
+        
+        $script .= 'if (shouldHandle) {';
         $script .= 'const items = e.clipboardData.items;';
         $script .= 'const files = [];';
         $script .= 'for (let i = 0; i < items.length; i++) {';
