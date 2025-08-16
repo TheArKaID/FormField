@@ -568,7 +568,9 @@ class FormField
         $script .= 'for (let i = 0; i < items.length; i++) {';
         $script .= 'if (items[i].type.indexOf("image") !== -1) {';
         $script .= 'const file = items[i].getAsFile();';
+        $script .= 'if (isFileAccepted(file, "'.$accept.'")) {';
         $script .= 'files.push(file);';
+        $script .= '}';
         $script .= '}';
         $script .= '}';
         $script .= 'if (files.length > 0) {';
@@ -578,15 +580,48 @@ class FormField
         $script .= '}';
         $script .= '});';
 
-        // File handling functions
+        // File handling functions with validation
+        $script .= 'function isFileAccepted(file, acceptString) {';
+        $script .= 'if (!acceptString || acceptString === "*/*") return true;';
+        $script .= 'const accepts = acceptString.split(",").map(s => s.trim());';
+        $script .= 'for (let accept of accepts) {';
+        $script .= 'if (accept.startsWith(".")) {';
+        $script .= 'if (file.name.toLowerCase().endsWith(accept.toLowerCase())) return true;';
+        $script .= '} else if (accept.includes("/*")) {';
+        $script .= 'const baseType = accept.split("/")[0];';
+        $script .= 'if (file.type.startsWith(baseType + "/")) return true;';
+        $script .= '} else if (file.type === accept) {';
+        $script .= 'return true;';
+        $script .= '}';
+        $script .= '}';
+        $script .= 'return false;';
+        $script .= '}';
+
         $script .= 'function addFiles(newFiles) {';
-        $script .= 'if ("'.$multiple.'" === "multiple") {';
-        $script .= 'selectedFiles = selectedFiles.concat(newFiles);';
+        $script .= 'const acceptedFiles = [];';
+        $script .= 'const rejectedFiles = [];';
+        $script .= 'for (let file of newFiles) {';
+        $script .= 'if (isFileAccepted(file, "'.$accept.'")) {';
+        $script .= 'acceptedFiles.push(file);';
         $script .= '} else {';
-        $script .= 'selectedFiles = [newFiles[0]];';
+        $script .= 'rejectedFiles.push(file);';
+        $script .= '}';
+        $script .= '}';
+        
+        $script .= 'if (rejectedFiles.length > 0) {';
+        $script .= 'const rejectedNames = rejectedFiles.map(f => f.name).join(", ");';
+        $script .= 'alert("The following files are not accepted based on the file type restrictions: " + rejectedNames);';
+        $script .= '}';
+        
+        $script .= 'if (acceptedFiles.length > 0) {';
+        $script .= 'if ("'.$multiple.'" === "multiple") {';
+        $script .= 'selectedFiles = selectedFiles.concat(acceptedFiles);';
+        $script .= '} else {';
+        $script .= 'selectedFiles = [acceptedFiles[0]];';
         $script .= '}';
         $script .= 'updateFileInput();';
         $script .= 'renderFiles();';
+        $script .= '}';
         $script .= '}';
 
         $script .= 'function removeFile(index) {';

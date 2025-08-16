@@ -149,4 +149,33 @@ class FileModernTest extends TestCase
         $this->assertTrue(str_contains($result, 'dropzone.addEventListener("click"'));
         $this->assertTrue(str_contains($result, 'dropzone.addEventListener("focus"'));
     }
+
+    #[Test]
+    public function it_includes_file_validation_logic()
+    {
+        $result = $this->formField->fileModern('images', ['accept' => 'image/*']);
+
+        // Should include file validation function
+        $this->assertTrue(str_contains($result, 'function isFileAccepted'));
+        $this->assertTrue(str_contains($result, 'acceptString.split'));
+        $this->assertTrue(str_contains($result, 'file.name.toLowerCase().endsWith'));
+        $this->assertTrue(str_contains($result, 'file.type.startsWith'));
+        
+        // Should validate files in addFiles function
+        $this->assertTrue(str_contains($result, 'const acceptedFiles = []'));
+        $this->assertTrue(str_contains($result, 'const rejectedFiles = []'));
+        $this->assertTrue(str_contains($result, 'isFileAccepted(file, "image/*")'));
+        
+        // Should show rejection message
+        $this->assertTrue(str_contains($result, 'files are not accepted based on the file type restrictions'));
+    }
+
+    #[Test]
+    public function it_validates_clipboard_paste_files()
+    {
+        $result = $this->formField->fileModern('docs', ['accept' => '.pdf,.doc']);
+
+        // Should validate pasted files
+        $this->assertTrue(str_contains($result, 'isFileAccepted(file, ".pdf,.doc")'));
+    }
 }
