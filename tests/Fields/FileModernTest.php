@@ -131,4 +131,22 @@ class FileModernTest extends TestCase
         $this->assertTrue(str_contains($result, 'name="files[]"'));
         $this->assertTrue(str_contains($result, 'getElementById("dropzone-files")'));
     }
+
+    #[Test]
+    public function it_includes_clipboard_paste_detection()
+    {
+        $result = $this->formField->fileModern('paste_test');
+
+        $this->assertTrue(str_contains($result, 'lastDropzoneInteraction'));
+        $this->assertTrue(str_contains($result, 'dropzoneInteractionTimeout'));
+        
+        $this->assertTrue(str_contains($result, 'shouldHandle = false'));
+        $this->assertTrue(str_contains($result, 'dropzone.contains(document.activeElement)'));
+        $this->assertTrue(str_contains($result, 'Date.now() - lastDropzoneInteraction'));
+        $this->assertTrue(str_contains($result, 'getBoundingClientRect()'));
+        $this->assertTrue(str_contains($result, 'elementFromPoint'));
+        
+        $this->assertTrue(str_contains($result, 'dropzone.addEventListener("click"'));
+        $this->assertTrue(str_contains($result, 'dropzone.addEventListener("focus"'));
+    }
 }
