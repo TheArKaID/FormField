@@ -418,10 +418,10 @@ class FormField
         $multiple = isset($options['multiple']) && $options['multiple'] ? 'multiple' : '';
         $maxSize = isset($options['max_size']) ? $options['max_size'] : '10MB';
         $allowedTypes = isset($options['allowed_types']) ? implode(', ', $options['allowed_types']) : 'All files';
-        
+
         // Sanitize field ID for use in HTML IDs (remove square brackets and other invalid characters)
         $sanitizedFieldId = preg_replace('/[^a-zA-Z0-9_-]/', '', $fieldId);
-        
+
         $dropzoneId = 'dropzone-'.$sanitizedFieldId;
         $fileInputId = 'file-input-'.$sanitizedFieldId;
         $previewId = 'preview-'.$sanitizedFieldId;

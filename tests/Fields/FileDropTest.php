@@ -53,7 +53,7 @@ class FileDropTest extends TestCase
             'id' => 'custom_id',
             'max_size' => '5MB',
             'allowed_types' => ['JPG', 'PNG', 'PDF'],
-            'label' => 'Custom File Upload'
+            'label' => 'Custom File Upload',
         ]);
 
         $this->assertTrue(str_contains($result, 'id="file-input-custom_id"'));
@@ -66,7 +66,7 @@ class FileDropTest extends TestCase
     public function it_returns_drop_file_upload_field_with_info_text()
     {
         $result = $this->formField->fileDrop('info_file', [
-            'info' => ['text' => 'This is help text', 'class' => 'warning']
+            'info' => ['text' => 'This is help text', 'class' => 'warning'],
         ]);
 
         $this->assertTrue(str_contains($result, 'This is help text'));
@@ -139,13 +139,13 @@ class FileDropTest extends TestCase
 
         $this->assertTrue(str_contains($result, 'lastDropzoneInteraction'));
         $this->assertTrue(str_contains($result, 'dropzoneInteractionTimeout'));
-        
+
         $this->assertTrue(str_contains($result, 'shouldHandle = false'));
         $this->assertTrue(str_contains($result, 'dropzone.contains(document.activeElement)'));
         $this->assertTrue(str_contains($result, 'Date.now() - lastDropzoneInteraction'));
         $this->assertTrue(str_contains($result, 'getBoundingClientRect()'));
         $this->assertTrue(str_contains($result, 'elementFromPoint'));
-        
+
         $this->assertTrue(str_contains($result, 'dropzone.addEventListener("click"'));
         $this->assertTrue(str_contains($result, 'dropzone.addEventListener("focus"'));
     }
@@ -160,12 +160,12 @@ class FileDropTest extends TestCase
         $this->assertTrue(str_contains($result, 'acceptString.split'));
         $this->assertTrue(str_contains($result, 'file.name.toLowerCase().endsWith'));
         $this->assertTrue(str_contains($result, 'file.type.startsWith'));
-        
+
         // Should validate files in addFiles function
         $this->assertTrue(str_contains($result, 'const acceptedFiles = []'));
         $this->assertTrue(str_contains($result, 'const rejectedFiles = []'));
         $this->assertTrue(str_contains($result, 'isFileAccepted(file, "image/*")'));
-        
+
         // Should show rejection message
         $this->assertTrue(str_contains($result, 'files are not accepted based on the file type restrictions'));
     }
