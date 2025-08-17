@@ -398,13 +398,13 @@ class FormField
     }
 
     /**
-     * Modern file input field with drag-and-drop and clipboard paste functionality.
+     * Drop file input field with drag-and-drop and clipboard paste functionality.
      *
      * @param  string  $name  The file field name and id attribute.
      * @param  array  $options  Additional attribute for the file input.
-     * @return string Generated modern file input form field.
+     * @return string Generated drop file input form field.
      */
-    public function fileModern($name, $options = [])
+    public function fileDrop($name, $options = [])
     {
         $requiredClass = (isset($options['required']) && $options['required'] == true) ? 'required ' : '';
         $hasError = $this->errorBag->has($this->formatArrayName($name));
@@ -422,13 +422,13 @@ class FormField
         // Sanitize field ID for use in HTML IDs (remove square brackets and other invalid characters)
         $sanitizedFieldId = preg_replace('/[^a-zA-Z0-9_-]/', '', $fieldId);
         
-        $dropzoneId = 'dropzone-' . $sanitizedFieldId;
-        $fileInputId = 'file-input-' . $sanitizedFieldId;
-        $previewId = 'preview-' . $sanitizedFieldId;
+        $dropzoneId = 'dropzone-'.$sanitizedFieldId;
+        $fileInputId = 'file-input-'.$sanitizedFieldId;
+        $previewId = 'preview-'.$sanitizedFieldId;
 
         // Container with dropzone styling
         $htmlForm .= '<div id="'.$dropzoneId.'" class="file-dropzone border border-2 border-dashed rounded p-4 text-center position-relative" style="min-height: 150px; cursor: pointer; transition: all 0.3s ease;">';
-        
+
         // Hidden file input
         $htmlForm .= '<input type="file" id="'.$fileInputId.'" name="'.$name.'" class="d-none" accept="'.$accept.'" '.$multiple;
         if (isset($options['required']) && $options['required'] == true) {
@@ -455,7 +455,7 @@ class FormField
         $htmlForm .= '</div>';
 
         // Add the JavaScript for drag-and-drop and clipboard functionality
-        $htmlForm .= $this->getFileModernScript($dropzoneId, $fileInputId, $previewId, $accept, $multiple);
+        $htmlForm .= $this->getFileDropScript($dropzoneId, $fileInputId, $previewId, $accept, $multiple);
 
         $htmlForm .= $this->getInfoTextLine($options);
 
@@ -467,7 +467,7 @@ class FormField
     }
 
     /**
-     * Generate JavaScript for modern file input functionality.
+     * Generate JavaScript for drop file input functionality.
      *
      * @param  string  $dropzoneId  The dropzone element ID.
      * @param  string  $fileInputId  The file input element ID.
@@ -476,7 +476,7 @@ class FormField
      * @param  string  $multiple  Multiple files flag.
      * @return string JavaScript code.
      */
-    private function getFileModernScript($dropzoneId, $fileInputId, $previewId, $accept, $multiple)
+    private function getFileDropScript($dropzoneId, $fileInputId, $previewId, $accept, $multiple)
     {
         $script = '<script>';
         $script .= '(function() {';
@@ -484,7 +484,7 @@ class FormField
         $script .= 'const fileInput = document.getElementById("'.$fileInputId.'");';
         $script .= 'const preview = document.getElementById("'.$previewId.'");';
         $script .= 'let selectedFiles = [];';
-        
+
         // Click handler
         $script .= 'dropzone.addEventListener("click", function(e) {';
         $script .= 'if (e.target === dropzone || e.target.closest(".dropzone-content")) {';
@@ -524,33 +524,33 @@ class FormField
         // Clipboard paste handler
         $script .= 'let lastDropzoneInteraction = null;';
         $script .= 'let dropzoneInteractionTimeout = null;';
-        
+
         // Track interactions with the dropzone
         $script .= 'dropzone.addEventListener("click", function() {';
         $script .= 'lastDropzoneInteraction = Date.now();';
         $script .= 'clearTimeout(dropzoneInteractionTimeout);';
         $script .= 'dropzoneInteractionTimeout = setTimeout(() => { lastDropzoneInteraction = null; }, 10000);';
         $script .= '});';
-        
+
         $script .= 'dropzone.addEventListener("focus", function() {';
         $script .= 'lastDropzoneInteraction = Date.now();';
         $script .= 'clearTimeout(dropzoneInteractionTimeout);';
         $script .= 'dropzoneInteractionTimeout = setTimeout(() => { lastDropzoneInteraction = null; }, 10000);';
         $script .= '}, true);';
-        
+
         $script .= 'document.addEventListener("paste", function(e) {';
         $script .= 'let shouldHandle = false;';
-        
+
         // Check if activeElement is inside dropzone
         $script .= 'if (document.activeElement && (dropzone.contains(document.activeElement) || document.activeElement.closest("#'.$dropzoneId.'"))) {';
         $script .= 'shouldHandle = true;';
         $script .= '}';
-        
+
         // Check if dropzone was recently interacted with
         $script .= 'if (!shouldHandle && lastDropzoneInteraction && (Date.now() - lastDropzoneInteraction < 5000)) {';
         $script .= 'shouldHandle = true;';
         $script .= '}';
-        
+
         // Check if dropzone is visible and cursor is over it
         $script .= 'if (!shouldHandle) {';
         $script .= 'const rect = dropzone.getBoundingClientRect();';
@@ -561,7 +561,7 @@ class FormField
         $script .= 'shouldHandle = true;';
         $script .= '}';
         $script .= '}';
-        
+
         $script .= 'if (shouldHandle) {';
         $script .= 'const items = e.clipboardData.items;';
         $script .= 'const files = [];';
@@ -607,12 +607,12 @@ class FormField
         $script .= 'rejectedFiles.push(file);';
         $script .= '}';
         $script .= '}';
-        
+
         $script .= 'if (rejectedFiles.length > 0) {';
         $script .= 'const rejectedNames = rejectedFiles.map(f => f.name).join(", ");';
         $script .= 'alert("The following files are not accepted based on the file type restrictions: " + rejectedNames);';
         $script .= '}';
-        
+
         $script .= 'if (acceptedFiles.length > 0) {';
         $script .= 'if ("'.$multiple.'" === "multiple") {';
         $script .= 'selectedFiles = selectedFiles.concat(acceptedFiles);';
@@ -642,19 +642,19 @@ class FormField
         $script .= 'preview.style.display = "block";';
         $script .= 'const fileList = document.createElement("div");';
         $script .= 'fileList.className = "list-group";';
-        
+
         $script .= 'for (let i = 0; i < selectedFiles.length; i++) {';
         $script .= 'const file = selectedFiles[i];';
         $script .= 'const fileItem = document.createElement("div");';
         $script .= 'fileItem.className = "list-group-item d-flex justify-content-between align-items-center";';
         $script .= 'fileItem.setAttribute("data-file-index", i);';
-        
+
         $script .= 'const fileInfo = document.createElement("div");';
         $script .= 'fileInfo.innerHTML = "<strong>" + file.name + "</strong><br><small class=\"text-muted\">" + formatFileSize(file.size) + "</small>";';
-        
+
         $script .= 'const fileActions = document.createElement("div");';
         $script .= 'fileActions.className = "d-flex align-items-center gap-2";';
-        
+
         $script .= 'const fileIcon = document.createElement("span");';
         $script .= 'if (file.type.startsWith("image/")) {';
         $script .= 'fileIcon.innerHTML = "🖼️";';
@@ -663,7 +663,7 @@ class FormField
         $script .= '} else {';
         $script .= 'fileIcon.innerHTML = "📎";';
         $script .= '}';
-        
+
         $script .= 'const deleteBtn = document.createElement("button");';
         $script .= 'deleteBtn.type = "button";';
         $script .= 'deleteBtn.className = "btn btn-sm btn-outline-danger";';
@@ -674,15 +674,15 @@ class FormField
         $script .= 'e.preventDefault();';
         $script .= 'removeFile(parseInt(this.getAttribute("data-file-index")));';
         $script .= '});';
-        
+
         $script .= 'fileActions.appendChild(fileIcon);';
         $script .= 'fileActions.appendChild(deleteBtn);';
-        
+
         $script .= 'fileItem.appendChild(fileInfo);';
         $script .= 'fileItem.appendChild(fileActions);';
         $script .= 'fileList.appendChild(fileItem);';
         $script .= '}';
-        
+
         $script .= 'preview.appendChild(fileList);';
         $script .= '} else {';
         $script .= 'preview.style.display = "none";';

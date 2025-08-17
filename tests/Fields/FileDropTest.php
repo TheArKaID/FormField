@@ -5,12 +5,12 @@ namespace Tests\Fields;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-class FileModernTest extends TestCase
+class FileDropTest extends TestCase
 {
     #[Test]
-    public function it_returns_modern_file_upload_field()
+    public function it_returns_drop_file_upload_field()
     {
-        $result = $this->formField->fileModern('document');
+        $result = $this->formField->fileDrop('document');
 
         $this->assertTrue(str_contains($result, 'file-dropzone'));
         $this->assertTrue(str_contains($result, 'Drop files here or click to browse'));
@@ -22,34 +22,34 @@ class FileModernTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_modern_file_upload_field_with_accept_option()
+    public function it_returns_drop_file_upload_field_with_accept_option()
     {
-        $result = $this->formField->fileModern('images', ['accept' => 'image/*']);
+        $result = $this->formField->fileDrop('images', ['accept' => 'image/*']);
 
         $this->assertTrue(str_contains($result, 'accept="image/*"'));
     }
 
     #[Test]
-    public function it_returns_modern_file_upload_field_with_multiple_option()
+    public function it_returns_drop_file_upload_field_with_multiple_option()
     {
-        $result = $this->formField->fileModern('files', ['multiple' => true]);
+        $result = $this->formField->fileDrop('files', ['multiple' => true]);
 
         $this->assertTrue(str_contains($result, 'multiple'));
     }
 
     #[Test]
-    public function it_returns_modern_file_upload_field_with_required_attribute()
+    public function it_returns_drop_file_upload_field_with_required_attribute()
     {
-        $generatedString = $this->formField->fileModern('required_file', ['required' => true]);
+        $generatedString = $this->formField->fileDrop('required_file', ['required' => true]);
 
         $this->assertTrue(str_contains($generatedString, 'required '));
         $this->assertTrue(str_contains($generatedString, ' required'));
     }
 
     #[Test]
-    public function it_returns_modern_file_upload_field_with_custom_options()
+    public function it_returns_drop_file_upload_field_with_custom_options()
     {
-        $result = $this->formField->fileModern('custom_file', [
+        $result = $this->formField->fileDrop('custom_file', [
             'id' => 'custom_id',
             'max_size' => '5MB',
             'allowed_types' => ['JPG', 'PNG', 'PDF'],
@@ -63,9 +63,9 @@ class FileModernTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_modern_file_upload_field_with_info_text()
+    public function it_returns_drop_file_upload_field_with_info_text()
     {
-        $result = $this->formField->fileModern('info_file', [
+        $result = $this->formField->fileDrop('info_file', [
             'info' => ['text' => 'This is help text', 'class' => 'warning']
         ]);
 
@@ -76,8 +76,8 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_generates_unique_ids_for_multiple_instances()
     {
-        $result1 = $this->formField->fileModern('file1');
-        $result2 = $this->formField->fileModern('file2');
+        $result1 = $this->formField->fileDrop('file1');
+        $result2 = $this->formField->fileDrop('file2');
 
         $this->assertTrue(str_contains($result1, 'dropzone-file1'));
         $this->assertTrue(str_contains($result2, 'dropzone-file2'));
@@ -88,7 +88,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_includes_javascript_for_drag_and_drop_functionality()
     {
-        $result = $this->formField->fileModern('js_test');
+        $result = $this->formField->fileDrop('js_test');
 
         $this->assertTrue(str_contains($result, 'addEventListener("dragover"'));
         $this->assertTrue(str_contains($result, 'addEventListener("drop"'));
@@ -101,7 +101,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_includes_accessibility_features()
     {
-        $result = $this->formField->fileModern('accessible_file');
+        $result = $this->formField->fileDrop('accessible_file');
 
         $this->assertTrue(str_contains($result, 'tabindex'));
         $this->assertTrue(str_contains($result, 'addEventListener("keydown"'));
@@ -112,7 +112,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_includes_delete_file_functionality()
     {
-        $result = $this->formField->fileModern('deletable_files');
+        $result = $this->formField->fileDrop('deletable_files');
 
         $this->assertTrue(str_contains($result, 'removeFile'));
         $this->assertTrue(str_contains($result, 'btn-outline-danger'));
@@ -123,7 +123,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_handles_array_field_names_correctly()
     {
-        $result = $this->formField->fileModern('files[]');
+        $result = $this->formField->fileDrop('files[]');
 
         $this->assertTrue(str_contains($result, 'id="dropzone-files"'));
         $this->assertTrue(str_contains($result, 'id="file-input-files"'));
@@ -135,7 +135,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_includes_clipboard_paste_detection()
     {
-        $result = $this->formField->fileModern('paste_test');
+        $result = $this->formField->fileDrop('paste_test');
 
         $this->assertTrue(str_contains($result, 'lastDropzoneInteraction'));
         $this->assertTrue(str_contains($result, 'dropzoneInteractionTimeout'));
@@ -153,7 +153,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_includes_file_validation_logic()
     {
-        $result = $this->formField->fileModern('images', ['accept' => 'image/*']);
+        $result = $this->formField->fileDrop('images', ['accept' => 'image/*']);
 
         // Should include file validation function
         $this->assertTrue(str_contains($result, 'function isFileAccepted'));
@@ -173,7 +173,7 @@ class FileModernTest extends TestCase
     #[Test]
     public function it_validates_clipboard_paste_files()
     {
-        $result = $this->formField->fileModern('docs', ['accept' => '.pdf,.doc']);
+        $result = $this->formField->fileDrop('docs', ['accept' => '.pdf,.doc']);
 
         // Should validate pasted files
         $this->assertTrue(str_contains($result, 'isFileAccepted(file, ".pdf,.doc")'));
